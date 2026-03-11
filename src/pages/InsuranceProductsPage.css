@@ -1377,6 +1377,22 @@
     font-size: 28px;
   }
 
+  .selected-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .item-price {
+    margin-left: 0;
+    white-space: normal;
+  }
+
+  .item-name {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
   .products-header {
     margin-bottom: 30px;
   }

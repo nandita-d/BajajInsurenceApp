@@ -159,6 +159,9 @@
   color: #FFA500;
   font-size: 13px;
   white-space: nowrap;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .btn-logout {
@@ -224,6 +227,12 @@
     display: block;
     width: 100%;
     text-align: left;
+    max-width: none;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .logo-text {

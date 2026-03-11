@@ -309,10 +309,15 @@
   .chatbot-window {
     width: 100vw;
     height: 100vh;
+    height: 100svh;
     border-radius: 0;
     bottom: 0;
     right: 0;
     max-width: none;
+  }
+
+  .chatbot-input-area {
+    padding-bottom: calc(15px + env(safe-area-inset-bottom));
   }
 
   .chatbot-toggle {
