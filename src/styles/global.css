@@ -27,6 +27,10 @@ body {
   overflow-x: hidden;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 .app-wrapper {
   min-height: 100vh;
   min-height: 100svh;

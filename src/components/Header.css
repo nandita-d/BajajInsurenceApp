@@ -1,7 +1,7 @@
 /* Header Styles */
 .header {
   background: linear-gradient(135deg, #003087 0%, #001A4D 100%);
-  padding: 15px 0;
+  padding: calc(15px + env(safe-area-inset-top)) 0 15px;
   box-shadow: 0 2px 12px rgba(0, 48, 135, 0.15);
   position: sticky;
   top: 0;
