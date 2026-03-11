@@ -5,7 +5,45 @@ import './DashboardPage.css';
 function DashboardPage({ userProfile, currentUser }) {
   const [activeTab, setActiveTab] = useState('overview');
   const [showPayEMI, setShowPayEMI] = useState(false);
+  const [activeModal, setActiveModal] = useState(null); // 'homeService' | 'claim' | 'support' | 'comingSoon'
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalSuccess, setModalSuccess] = useState('');
+
+  const [homeServiceForm, setHomeServiceForm] = useState({
+    serviceType: 'Plumber',
+    address: '',
+    date: '',
+  });
+
+  const [claimForm, setClaimForm] = useState({
+    policyNumber: '',
+    claimType: 'Accident',
+    description: '',
+  });
+  const [claimDocs, setClaimDocs] = useState([]);
+
+  const [supportForm, setSupportForm] = useState({
+    name: (userProfile?.fullName || '').trim(),
+    email: (userProfile?.email || (String(currentUser || '').includes('@') ? currentUser : '')).trim(),
+    message: '',
+  });
+
   const displayName = (userProfile?.fullName || '').trim() || currentUser;
+
+  const openComingSoon = (title = 'Coming Soon', message = 'This feature is coming soon. Our team is working on it.') => {
+    setModalTitle(title);
+    setModalMessage(message);
+    setModalSuccess('');
+    setActiveModal('comingSoon');
+  };
+
+  const closeModal = () => {
+    setActiveModal(null);
+    setModalTitle('');
+    setModalMessage('');
+    setModalSuccess('');
+  };
 
   let insurancePlans = [
     {
@@ -106,10 +144,18 @@ function DashboardPage({ userProfile, currentUser }) {
             <p>Manage your insurance policies and account settings</p>
           </div>
           <div className="dashboard-actions">
-            <button className="btn btn-secondary">
+            <button className="btn btn-secondary" onClick={() => openComingSoon('Notifications')}>
               <FaBell /> Notifications
             </button>
-            <button className="btn btn-outline">
+            <button
+              className="btn btn-outline"
+              onClick={() => {
+                setModalTitle('24/7 Support');
+                setModalMessage('Our support team is available 24/7 to assist you with claims, policies, or any issues.');
+                setModalSuccess('');
+                setActiveModal('support');
+              }}
+            >
               <FaPhone /> Support
             </button>
           </div>
@@ -212,17 +258,88 @@ function DashboardPage({ userProfile, currentUser }) {
                   <FaWallet className="action-icon" />
                   <span>Pay EMI</span>
                 </button>
-                <button className="action-card">
+                <button
+                  className="action-card"
+                  onClick={() => {
+                    setHomeServiceForm({ serviceType: 'Plumber', address: '', date: '' });
+                    setModalTitle('Add Home Services');
+                    setModalMessage('Share your service details and we’ll schedule a visit.');
+                    setModalSuccess('');
+                    setActiveModal('homeService');
+                  }}
+                >
                   <FaHome className="action-icon" />
-                  <span>Home Service</span>
+                  <span>Add Home Services</span>
                 </button>
-                <button className="action-card">
+                <button
+                  className="action-card"
+                  onClick={() => {
+                    setClaimForm({ policyNumber: '', claimType: 'Accident', description: '' });
+                    setClaimDocs([]);
+                    setModalTitle('File a Claim');
+                    setModalMessage('Submit your claim details. You can upload supporting documents.');
+                    setModalSuccess('');
+                    setActiveModal('claim');
+                  }}
+                >
                   <FaClipboardList className="action-icon" />
                   <span>File a Claim</span>
                 </button>
-                <button className="action-card">
+                <button
+                  className="action-card"
+                  onClick={() => {
+                    setModalTitle('24/7 Support');
+                    setModalMessage('Our support team is available 24/7 to assist you with claims, policies, or any issues.');
+                    setModalSuccess('');
+                    setActiveModal('support');
+                  }}
+                >
                   <FaPhone className="action-icon" />
                   <span>Contact Support</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Support */}
+            <div className="section support-section">
+              <div className="support-header">
+                <h2>Support</h2>
+                <span className="support-badge">24/7 Available</span>
+              </div>
+              <p className="support-description">
+                Our support team is available 24/7 to assist you with claims, policies, or any issues.
+              </p>
+              <div className="support-grid">
+                <div className="support-card">
+                  <p className="support-label">Phone</p>
+                  <p className="support-value">1800-200-200</p>
+                  <p className="support-sub">Call anytime (24/7)</p>
+                </div>
+                <div className="support-card">
+                  <p className="support-label">Email</p>
+                  <p className="support-value">support@bajajinsurance.com</p>
+                  <p className="support-sub">We reply quickly</p>
+                </div>
+                <div className="support-card">
+                  <p className="support-label">Live Chat</p>
+                  <p className="support-value">Chat with us</p>
+                  <button type="button" className="btn btn-outline btn-sm" onClick={() => openComingSoon('Live Chat')}>
+                    Start Chat
+                  </button>
+                </div>
+              </div>
+              <div className="support-actions">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => {
+                    setModalTitle('Contact Support');
+                    setModalMessage('Send us a message and we’ll get back to you.');
+                    setModalSuccess('');
+                    setActiveModal('support');
+                  }}
+                >
+                  Contact Support
                 </button>
               </div>
             </div>
@@ -434,6 +551,230 @@ function DashboardPage({ userProfile, currentUser }) {
                   Proceed to Payment
                 </button>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Action Modals */}
+      {activeModal && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal-content modal-lg" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{modalTitle}</h2>
+              <button className="close-btn" onClick={closeModal} aria-label="Close">Ã—</button>
+            </div>
+
+            <div className="modal-body">
+              {modalMessage && <p className="modal-subtitle">{modalMessage}</p>}
+              {modalSuccess && <div className="success-message">{modalSuccess}</div>}
+
+              {activeModal === 'comingSoon' && (
+                <div className="coming-soon">
+                  <p>This feature is coming soon. Our team is working on it.</p>
+                </div>
+              )}
+
+              {activeModal === 'homeService' && (
+                <form
+                  className="action-form"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (!homeServiceForm.address.trim() || !homeServiceForm.date) {
+                      setModalSuccess('');
+                      setModalMessage('Please fill service type, address, and date.');
+                      return;
+                    }
+                    setModalMessage('');
+                    setModalSuccess('Home service request submitted successfully.');
+                    setTimeout(() => closeModal(), 900);
+                  }}
+                >
+                  <div className="form-group">
+                    <label>Service Type</label>
+                    <select
+                      value={homeServiceForm.serviceType}
+                      onChange={(e) => setHomeServiceForm((p) => ({ ...p, serviceType: e.target.value }))}
+                    >
+                      <option>Plumber</option>
+                      <option>Electrician</option>
+                      <option>AC Repair</option>
+                      <option>Appliance Repair</option>
+                      <option>Cleaning</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Address</label>
+                    <textarea
+                      rows="3"
+                      placeholder="Enter service address"
+                      value={homeServiceForm.address}
+                      onChange={(e) => setHomeServiceForm((p) => ({ ...p, address: e.target.value }))}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Date</label>
+                    <input
+                      type="date"
+                      value={homeServiceForm.date}
+                      onChange={(e) => setHomeServiceForm((p) => ({ ...p, date: e.target.value }))}
+                    />
+                  </div>
+
+                  <div className="modal-actions">
+                    <button type="button" className="btn btn-outline" onClick={closeModal}>
+                      Cancel
+                    </button>
+                    <button type="submit" className="btn btn-primary">
+                      Submit
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {activeModal === 'claim' && (
+                <form
+                  className="action-form"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (!claimForm.policyNumber.trim() || !claimForm.description.trim()) {
+                      setModalSuccess('');
+                      setModalMessage('Please enter policy number and description.');
+                      return;
+                    }
+                    setModalMessage('');
+                    setModalSuccess('Claim submitted successfully. Our team will contact you shortly.');
+                    setTimeout(() => closeModal(), 900);
+                  }}
+                >
+                  <div className="form-group">
+                    <label>Policy Number</label>
+                    <input
+                      placeholder="Enter policy number"
+                      value={claimForm.policyNumber}
+                      onChange={(e) => setClaimForm((p) => ({ ...p, policyNumber: e.target.value }))}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Claim Type</label>
+                    <select
+                      value={claimForm.claimType}
+                      onChange={(e) => setClaimForm((p) => ({ ...p, claimType: e.target.value }))}
+                    >
+                      <option>Accident</option>
+                      <option>Theft</option>
+                      <option>Health</option>
+                      <option>Device Damage</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Description</label>
+                    <textarea
+                      rows="4"
+                      placeholder="Describe the issue"
+                      value={claimForm.description}
+                      onChange={(e) => setClaimForm((p) => ({ ...p, description: e.target.value }))}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Upload Documents</label>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*,.pdf"
+                      onChange={(e) => setClaimDocs(Array.from(e.target.files || []))}
+                    />
+                    {claimDocs.length > 0 && (
+                      <p className="file-hint">{claimDocs.length} file(s) selected</p>
+                    )}
+                  </div>
+
+                  <div className="modal-actions">
+                    <button type="button" className="btn btn-outline" onClick={closeModal}>
+                      Cancel
+                    </button>
+                    <button type="submit" className="btn btn-primary">
+                      Submit Claim
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {activeModal === 'support' && (
+                <div className="support-modal">
+                  <div className="support-contact">
+                    <div className="support-line">
+                      <span className="support-k">24/7 Support</span>
+                      <span className="support-v">Available anytime</span>
+                    </div>
+                    <div className="support-line">
+                      <span className="support-k">Phone</span>
+                      <span className="support-v">1800-200-200</span>
+                    </div>
+                    <div className="support-line">
+                      <span className="support-k">Email</span>
+                      <span className="support-v">support@bajajinsurance.com</span>
+                    </div>
+                    <div className="support-line">
+                      <span className="support-k">Live Chat</span>
+                      <button type="button" className="btn btn-outline btn-sm" onClick={() => openComingSoon('Live Chat')}>
+                        Start Chat
+                      </button>
+                    </div>
+                  </div>
+
+                  <form
+                    className="action-form"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (!supportForm.message.trim()) {
+                        setModalSuccess('');
+                        setModalMessage('Please enter your message.');
+                        return;
+                      }
+                      setModalMessage('');
+                      setModalSuccess('Message sent. Our support team will contact you shortly.');
+                      setSupportForm((p) => ({ ...p, message: '' }));
+                    }}
+                  >
+                    <div className="form-group">
+                      <label>Your Name</label>
+                      <input
+                        value={supportForm.name}
+                        onChange={(e) => setSupportForm((p) => ({ ...p, name: e.target.value }))}
+                        placeholder="Enter your name"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Email</label>
+                      <input
+                        type="email"
+                        value={supportForm.email}
+                        onChange={(e) => setSupportForm((p) => ({ ...p, email: e.target.value }))}
+                        placeholder="Enter your email"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Message</label>
+                      <textarea
+                        rows="4"
+                        value={supportForm.message}
+                        onChange={(e) => setSupportForm((p) => ({ ...p, message: e.target.value }))}
+                        placeholder="How can we help you?"
+                      />
+                    </div>
+                    <div className="modal-actions">
+                      <button type="button" className="btn btn-outline" onClick={closeModal}>
+                        Close
+                      </button>
+                      <button type="submit" className="btn btn-primary">
+                        Send Message
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
             </div>
           </div>
         </div>
