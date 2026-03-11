@@ -1,20 +1,16 @@
 import React, { useState } from 'react';
-import { FaUser, FaCog, FaShieldAlt, FaHome, FaWallet, FaPhone, FaClipboardList, FaBell } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { FaCar, FaHeartbeat, FaHome, FaMobileAlt, FaPlane, FaUser, FaCog, FaShieldAlt, FaWallet, FaPhone, FaClipboardList, FaBell } from 'react-icons/fa';
 import './DashboardPage.css';
 
 function DashboardPage({ userProfile, currentUser }) {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [showPayEMI, setShowPayEMI] = useState(false);
-  const [activeModal, setActiveModal] = useState(null); // 'homeService' | 'claim' | 'support' | 'comingSoon'
+  const [activeModal, setActiveModal] = useState(null); // 'claim' | 'support' | 'comingSoon'
   const [modalTitle, setModalTitle] = useState('');
   const [modalMessage, setModalMessage] = useState('');
   const [modalSuccess, setModalSuccess] = useState('');
-
-  const [homeServiceForm, setHomeServiceForm] = useState({
-    serviceType: 'Plumber',
-    address: '',
-    date: '',
-  });
 
   const [claimForm, setClaimForm] = useState({
     policyNumber: '',
@@ -261,15 +257,27 @@ function DashboardPage({ userProfile, currentUser }) {
                 <button
                   className="action-card"
                   onClick={() => {
-                    setHomeServiceForm({ serviceType: 'Plumber', address: '', date: '' });
-                    setModalTitle('Add Home Services');
-                    setModalMessage('Share your service details and we’ll schedule a visit.');
-                    setModalSuccess('');
-                    setActiveModal('homeService');
+                    navigate('/products?category=health');
                   }}
                 >
+                  <FaHeartbeat className="action-icon" />
+                  <span>Health Insurance</span>
+                </button>
+                <button className="action-card" onClick={() => navigate('/products?category=motor')}>
+                  <FaCar className="action-icon" />
+                  <span>Motor Insurance</span>
+                </button>
+                <button className="action-card" onClick={() => openComingSoon('Home Insurance')}>
                   <FaHome className="action-icon" />
-                  <span>Add Home Services</span>
+                  <span>Home Insurance</span>
+                </button>
+                <button className="action-card" onClick={() => openComingSoon('Travel Insurance')}>
+                  <FaPlane className="action-icon" />
+                  <span>Travel Insurance</span>
+                </button>
+                <button className="action-card" onClick={() => navigate('/gadget-insurance')}>
+                  <FaMobileAlt className="action-icon" />
+                  <span>Gadget Insurance</span>
                 </button>
                 <button
                   className="action-card"
@@ -573,63 +581,6 @@ function DashboardPage({ userProfile, currentUser }) {
                 <div className="coming-soon">
                   <p>This feature is coming soon. Our team is working on it.</p>
                 </div>
-              )}
-
-              {activeModal === 'homeService' && (
-                <form
-                  className="action-form"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    if (!homeServiceForm.address.trim() || !homeServiceForm.date) {
-                      setModalSuccess('');
-                      setModalMessage('Please fill service type, address, and date.');
-                      return;
-                    }
-                    setModalMessage('');
-                    setModalSuccess('Home service request submitted successfully.');
-                    setTimeout(() => closeModal(), 900);
-                  }}
-                >
-                  <div className="form-group">
-                    <label>Service Type</label>
-                    <select
-                      value={homeServiceForm.serviceType}
-                      onChange={(e) => setHomeServiceForm((p) => ({ ...p, serviceType: e.target.value }))}
-                    >
-                      <option>Plumber</option>
-                      <option>Electrician</option>
-                      <option>AC Repair</option>
-                      <option>Appliance Repair</option>
-                      <option>Cleaning</option>
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label>Address</label>
-                    <textarea
-                      rows="3"
-                      placeholder="Enter service address"
-                      value={homeServiceForm.address}
-                      onChange={(e) => setHomeServiceForm((p) => ({ ...p, address: e.target.value }))}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Date</label>
-                    <input
-                      type="date"
-                      value={homeServiceForm.date}
-                      onChange={(e) => setHomeServiceForm((p) => ({ ...p, date: e.target.value }))}
-                    />
-                  </div>
-
-                  <div className="modal-actions">
-                    <button type="button" className="btn btn-outline" onClick={closeModal}>
-                      Cancel
-                    </button>
-                    <button type="submit" className="btn btn-primary">
-                      Submit
-                    </button>
-                  </div>
-                </form>
               )}
 
               {activeModal === 'claim' && (

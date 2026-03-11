@@ -7,18 +7,21 @@ Set-StrictMode -Version Latest
 
 $remoteUrl = 'https://github.com/nandita-d/BajajInsurenceApp.git'
 
-# OneDrive can block writing `.git` metadata. Work around by syncing to a normal folder and pushing from there.
+# OneDrive can block writing `.git` metadata. Work around by syncing to a separate clone and pushing from there.
 $sourceDir = (Get-Location).Path
-$targetDir = Join-Path $env:USERPROFILE '.codex\memories\BajajInsurenceApp_push'
+$targetDir = Join-Path $env:LOCALAPPDATA 'BajajInsurenceApp_push'
 
-if (-not (Test-Path $targetDir)) {
-  New-Item -ItemType Directory -Path $targetDir | Out-Null
+$isValidClone = Test-Path (Join-Path $targetDir '.git\HEAD')
+if ((-not (Test-Path $targetDir)) -or (-not $isValidClone)) {
+  if (Test-Path $targetDir) {
+    Remove-Item -Recurse -Force $targetDir
+  }
   git clone $remoteUrl $targetDir
 }
 
 robocopy $sourceDir $targetDir /MIR `
   /XD .git node_modules build dist out `
-      BajajInsurenceApp _github_repo _pushrepo2 .vscode `
+      BajajInsurenceApp _github_repo _pushrepo2 _pushrepo_git .vscode `
   /XF yarn.lock npm-debug.log yarn-error.log `
   /R:1 /W:1 /NJH /NJS /NP /NFL /NDL | Out-Null
 

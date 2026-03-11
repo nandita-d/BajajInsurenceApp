@@ -1,10 +1,22 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { FaCar, FaCheck, FaHeartbeat, FaMobileAlt, FaShoppingCart, FaUserShield } from 'react-icons/fa';
 import './InsuranceProductsPage.css';
 
+const CATEGORY_QUERY_MAP = {
+  health: 'Health Insurance',
+  'health-insurance': 'Health Insurance',
+  motor: 'Motor Insurance',
+  'motor-insurance': 'Motor Insurance',
+  gadget: 'Gadget Insurance',
+  'gadget-insurance': 'Gadget Insurance',
+  personal: 'Personal Insurance',
+  'personal-insurance': 'Personal Insurance',
+};
+
 function InsuranceProductsPage({ onComplete, userProfile }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedPlans, setSelectedPlans] = useState(() =>
     Array.isArray(userProfile?.selectedInsurances) ? userProfile.selectedInsurances : []
   );
@@ -295,6 +307,22 @@ function InsuranceProductsPage({ onComplete, userProfile }) {
     .reduce((sum, p) => sum + p.price, 0);
 
   const toSlug = (value) => value.toLowerCase().replace(/\s+/g, '-');
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const raw = (params.get('category') || '').trim().toLowerCase();
+    if (!raw) return;
+
+    const normalized = raw.replace(/_/g, '-').replace(/\s+/g, '-');
+    const candidates = [normalized];
+    if (!normalized.includes('insurance')) candidates.push(`${normalized}-insurance`);
+
+    const nextCategory = candidates.map((c) => CATEGORY_QUERY_MAP[c]).find(Boolean);
+    if (nextCategory && nextCategory !== activeCategory) {
+      setActiveCategory(nextCategory);
+      setExpandedTerms(null);
+    }
+  }, [location.search, activeCategory]);
 
   return (
     <div className="insurance-products-page">
