@@ -146,7 +146,7 @@ function SegmentationPage({ onNext, userProfile }) {
         <div
           className="segmentation-header"
           style={{
-            backgroundImage: "url('/segmentation-bg.jpg')",
+            backgroundImage: `linear-gradient(135deg, rgba(0, 48, 135, 0.82) 0%, rgba(0, 26, 77, 0.88) 100%), url('${process.env.PUBLIC_URL}/segmentation-bg.jpg')`,
           }}
         >
           <h1>Let's Get to Know You Better</h1>

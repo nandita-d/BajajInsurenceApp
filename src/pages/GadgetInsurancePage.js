@@ -5,7 +5,9 @@ import './GadgetInsurancePage.css';
 
 function GadgetInsurancePage({ onComplete, userProfile }) {
   const navigate = useNavigate();
-  const [selectedPlans, setSelectedPlans] = useState([]);
+  const [selectedPlans, setSelectedPlans] = useState(() =>
+    Array.isArray(userProfile?.selectedInsurances) ? userProfile.selectedInsurances : []
+  );
 
   // ===================== GADGET INSURANCE PLANS =====================
   const gadgetPlans = [
@@ -107,8 +109,18 @@ function GadgetInsurancePage({ onComplete, userProfile }) {
   };
 
   const handleProceedCheckout = () => {
-    onComplete({ selectedInsurances: selectedPlans });
-    navigate('/dashboard');
+    const selectedPlanDetails = gadgetPlans
+      .filter((p) => selectedPlans.includes(p.id))
+      .map((p) => ({
+        id: p.id,
+        name: p.name,
+        price: p.price,
+        coverage: p.coverage,
+        category: 'Gadget Insurance',
+      }));
+
+    onComplete({ selectedInsurances: selectedPlans, selectedPlanDetails });
+    navigate('/cart');
   };
 
   const totalPrice = gadgetPlans
@@ -311,7 +323,7 @@ function GadgetInsurancePage({ onComplete, userProfile }) {
                 className="btn-proceed"
                 onClick={handleProceedCheckout}
               >
-                <FaShoppingCart /> Proceed to Checkout
+                <FaShoppingCart /> Go to Cart
               </button>
               <button
                 className="btn-back"

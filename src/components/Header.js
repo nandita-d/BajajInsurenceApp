@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaBars, FaHome, FaTimes, FaUser, FaSignOutAlt } from 'react-icons/fa';
+import { FaBars, FaHome, FaShoppingCart, FaTimes, FaUser, FaSignOutAlt } from 'react-icons/fa';
 import './Header.css';
 // logo file should be placed in public/bajaj-logo.png
 
@@ -51,6 +51,11 @@ function Header({ isLoggedIn, currentUser, onLogout }) {
                 <li>
                   <Link to="/dashboard" className="nav-link" onClick={() => setIsMenuOpen(false)}>
                     <FaUser /> Dashboard
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/cart" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                    <FaShoppingCart /> Cart
                   </Link>
                 </li>
                 <li>

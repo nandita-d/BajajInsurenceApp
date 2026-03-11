@@ -5,7 +5,9 @@ import './PersonalInsurancePage.css';
 
 function PersonalInsurancePage({ onComplete, userProfile }) {
   const navigate = useNavigate();
-  const [selectedPlans, setSelectedPlans] = useState([]);
+  const [selectedPlans, setSelectedPlans] = useState(() =>
+    Array.isArray(userProfile?.selectedInsurances) ? userProfile.selectedInsurances : []
+  );
   const [expandedTerms, setExpandedTerms] = useState(null);
 
   const personalPlans = [
@@ -74,8 +76,18 @@ function PersonalInsurancePage({ onComplete, userProfile }) {
     .reduce((sum, p) => sum + p.price, 0);
 
   const checkout = () => {
-    onComplete({ selectedInsurances: selectedPlans });
-    navigate('/dashboard');
+    const selectedPlanDetails = personalPlans
+      .filter((p) => selectedPlans.includes(p.id))
+      .map((p) => ({
+        id: p.id,
+        name: p.name,
+        price: p.price,
+        coverage: 'â€”',
+        category: 'Personal Insurance',
+      }));
+
+    onComplete({ selectedInsurances: selectedPlans, selectedPlanDetails });
+    navigate('/cart');
   };
 
   return (
@@ -125,7 +137,7 @@ function PersonalInsurancePage({ onComplete, userProfile }) {
             ))}
             <div className="total">Total: ₹{total}</div>
             <div className="actions">
-              <button className="btn-proceed" onClick={checkout}><FaShoppingCart/> Proceed</button>
+              <button className="btn-proceed" onClick={checkout}><FaShoppingCart/> Go to Cart</button>
               <button className="btn-back" onClick={()=>navigate(-1)}>Back</button>
             </div>
           </div>

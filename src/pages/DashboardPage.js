@@ -32,6 +32,10 @@ function DashboardPage({ userProfile, currentUser }) {
     ? userProfile.selectedInsurances
     : [];
 
+  const selectedPlanDetails = Array.isArray(userProfile?.selectedPlanDetails)
+    ? userProfile.selectedPlanDetails
+    : [];
+
   // De-dupe in case the same plan id is saved twice.
   const uniquePlanIds = Array.from(new Set(selectedPlanIds));
 
@@ -52,20 +56,30 @@ function DashboardPage({ userProfile, currentUser }) {
     'personal-standard': { category: 'Personal Insurance', tier: 'Standard', price: 149, coverage: 'â‚¹20 Lakh' },
     'personal-premium': { category: 'Personal Insurance', tier: 'Premium', price: 249, coverage: 'â‚¹50 Lakh' },
   };
-
-  insurancePlans = uniquePlanIds.map((planId) => {
-    const meta = planCatalog[planId];
-    return {
-      id: planId,
-      name: meta ? `${meta.category} (${meta.tier})` : planId,
+  if (selectedPlanDetails.length > 0) {
+    insurancePlans = selectedPlanDetails.map((plan) => ({
+      id: plan.id,
+      name: plan.category || plan.name,
       provider: 'Bajaj Allianz',
-      premium: meta ? `â‚¹${meta.price}/month` : '—',
-      coverage: meta ? meta.coverage : '—',
+      premium: plan.price != null ? `₹${plan.price}/month` : '—',
+      coverage: plan.coverage || '—',
       status: 'Active',
       renewalDate: '—',
-    };
-  });
-
+    }));
+  } else {
+    insurancePlans = uniquePlanIds.map((planId) => {
+      const meta = planCatalog[planId];
+      return {
+        id: planId,
+        name: meta ? `${meta.category} (${meta.tier})` : planId,
+        provider: 'Bajaj Allianz',
+        premium: meta ? `₹${meta.price}/month` : '—',
+        coverage: meta ? meta.coverage : '—',
+        status: 'Active',
+        renewalDate: '—',
+      };
+    });
+  }
   const recentPolicies = [
     {
       id: 'policy-1',

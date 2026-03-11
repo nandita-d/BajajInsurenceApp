@@ -3,18 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { FaCar, FaCheck, FaHeartbeat, FaMobileAlt, FaShoppingCart, FaUserShield } from 'react-icons/fa';
 import './InsuranceProductsPage.css';
 
-function InsuranceProductsPage({ onComplete, userProfile, onLogin, registerUser }) {
+function InsuranceProductsPage({ onComplete, userProfile }) {
   const navigate = useNavigate();
-  const [selectedPlans, setSelectedPlans] = useState([]);
+  const [selectedPlans, setSelectedPlans] = useState(() =>
+    Array.isArray(userProfile?.selectedInsurances) ? userProfile.selectedInsurances : []
+  );
   const [activeCategory, setActiveCategory] = useState('Health Insurance');
   const [expandedTerms, setExpandedTerms] = useState(null);
-  const [showAccountModal, setShowAccountModal] = useState(false);
-  const [accountError, setAccountError] = useState('');
-  const [accountForm, setAccountForm] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-  });
 
   // ===================== HEALTH INSURANCE =====================
   const healthPlans = [
@@ -257,8 +252,9 @@ function InsuranceProductsPage({ onComplete, userProfile, onLogin, registerUser 
     'Personal Insurance': <FaUserShield />,
   };
 
-  // Flatten all plans for selection tracking
-  const allPlans = [...healthPlans, ...gadgetPlans, ...motorPlans, ...personalPlans];
+  const allPlans = allInsuranceCategories.flatMap(({ name, plans }) =>
+    plans.map((plan) => ({ ...plan, categoryName: name }))
+  );
 
   const togglePlan = (planId) => {
     if (selectedPlans.includes(planId)) {
@@ -272,51 +268,25 @@ function InsuranceProductsPage({ onComplete, userProfile, onLogin, registerUser 
     setExpandedTerms(expandedTerms === planId ? null : planId);
   };
 
-  const handleCreateAccount = () => {
-    setAccountError('');
-    setShowAccountModal(true);
-  };
+  const goToCart = () => {
+    const selectedPlanDetails = allPlans
+      .filter((p) => selectedPlans.includes(p.id))
+      .map((p) => ({
+        id: p.id,
+        name: p.name,
+        price: p.price,
+        coverage: p.coverage,
+        category: p.categoryName,
+      }));
 
-  const updateAccountField = (field, value) => {
-    setAccountForm((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const submitAccount = (e) => {
-    e.preventDefault();
-    setAccountError('');
-
-    const fullName = accountForm.fullName.trim();
-    const email = accountForm.email.trim();
-    const password = accountForm.password;
-
-    if (!fullName || !email || !password) {
-      setAccountError('Please enter your name, email, and password.');
-      return;
+    if (typeof onComplete === 'function') {
+      onComplete({
+        selectedInsurances: selectedPlans,
+        selectedPlanDetails,
+      });
     }
 
-    // Lightweight email sanity check.
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-      setAccountError('Please enter a valid email address.');
-      return;
-    }
-
-    if (typeof registerUser === 'function') {
-      registerUser(email, password);
-    }
-
-    if (typeof onLogin === 'function') {
-      onLogin(email);
-    }
-
-    onComplete({
-      selectedInsurances: selectedPlans,
-      fullName,
-      email,
-    });
-
-    setShowAccountModal(false);
-    setAccountForm({ fullName: '', email: '', password: '' });
-    navigate('/dashboard');
+    navigate('/cart');
   };
 
   // Calculate total price from all selected plans
@@ -470,9 +440,9 @@ function InsuranceProductsPage({ onComplete, userProfile, onLogin, registerUser 
             <div className="checkout-actions">
               <button
                 className="btn-proceed"
-                onClick={handleCreateAccount}
+                onClick={goToCart}
               >
-                <FaShoppingCart /> Create Account
+                <FaShoppingCart /> Go to Cart
               </button>
               <button
                 className="btn-back"
@@ -480,90 +450,6 @@ function InsuranceProductsPage({ onComplete, userProfile, onLogin, registerUser 
               >
                 Back to Preferences
               </button>
-            </div>
-          </div>
-        )}
-
-        {showAccountModal && (
-          <div
-            className="account-modal-overlay"
-            onClick={() => setShowAccountModal(false)}
-          >
-            <div
-              className="account-modal"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="account-modal-header">
-                <h2>Create Account</h2>
-                <button
-                  type="button"
-                  className="account-close"
-                  onClick={() => setShowAccountModal(false)}
-                  aria-label="Close"
-                >
-                  ×
-                </button>
-              </div>
-
-              <div className="account-modal-body">
-                <p className="account-modal-subtitle">
-                  Enter your name, email, and password to continue.
-                </p>
-
-                {accountError && (
-                  <div className="account-error" role="alert">
-                    {accountError}
-                  </div>
-                )}
-
-                <form className="account-form" onSubmit={submitAccount}>
-                  <label className="account-field">
-                    <span>Name</span>
-                    <input
-                      type="text"
-                      value={accountForm.fullName}
-                      onChange={(e) => updateAccountField('fullName', e.target.value)}
-                      placeholder="Enter your name"
-                      autoComplete="name"
-                    />
-                  </label>
-
-                  <label className="account-field">
-                    <span>Email</span>
-                    <input
-                      type="email"
-                      value={accountForm.email}
-                      onChange={(e) => updateAccountField('email', e.target.value)}
-                      placeholder="Enter your email"
-                      autoComplete="email"
-                    />
-                  </label>
-
-                  <label className="account-field">
-                    <span>Password</span>
-                    <input
-                      type="password"
-                      value={accountForm.password}
-                      onChange={(e) => updateAccountField('password', e.target.value)}
-                      placeholder="Enter your password"
-                      autoComplete="new-password"
-                    />
-                  </label>
-
-                  <div className="account-modal-actions">
-                    <button
-                      type="button"
-                      className="btn-back"
-                      onClick={() => setShowAccountModal(false)}
-                    >
-                      Cancel
-                    </button>
-                    <button type="submit" className="btn-proceed">
-                      Continue
-                    </button>
-                  </div>
-                </form>
-              </div>
             </div>
           </div>
         )}

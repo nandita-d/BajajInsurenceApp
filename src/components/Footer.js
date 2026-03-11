@@ -43,7 +43,7 @@ function Footer() {
       </div>
 
       <div className="footer-bottom">
-        <p>&copy; 2024 Bajaj Insurance. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} Bajaj Insurance. All rights reserved.</p>
       </div>
     </footer>
   );

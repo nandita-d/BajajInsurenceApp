@@ -8,6 +8,7 @@ import SegmentationPage from './pages/SegmentationPage';
 import InsuranceProductsPage from './pages/InsuranceProductsPage';
 import GadgetInsurancePage from './pages/GadgetInsurancePage';
 import PersonalInsurancePage from './pages/PersonalInsurancePage';
+import CartPage from './pages/CartPage';
 import DashboardPage from './pages/DashboardPage';
 import Chatbot from './components/Chatbot';
 import './styles/global.css';
@@ -37,6 +38,7 @@ function App() {
       occupation: null,
       priceRange: null,
       selectedInsurances: [],
+      selectedPlanDetails: [],
       fullName: '',
       email: '',
       phone: '',
@@ -64,6 +66,13 @@ function App() {
       const next = { ...prev, ...data };
       if (Array.isArray(next.selectedInsurances)) {
         next.selectedInsurances = Array.from(new Set(next.selectedInsurances));
+      }
+      if (Array.isArray(next.selectedPlanDetails)) {
+        const byId = new Map();
+        next.selectedPlanDetails.forEach((item) => {
+          if (item?.id) byId.set(item.id, item);
+        });
+        next.selectedPlanDetails = Array.from(byId.values());
       }
       return next;
     });
@@ -112,8 +121,6 @@ function App() {
                   <InsuranceProductsPage 
                     onComplete={updateUserProfile} 
                     userProfile={userProfile} 
-                    onLogin={handleLogin}
-                    registerUser={registerUser}
                   />
                 ) : (
                   <LoginPage onLogin={handleLogin} onProfileUpdate={updateUserProfile} registeredUsers={registeredUsers} registerUser={registerUser} />
@@ -141,6 +148,16 @@ function App() {
                     onComplete={updateUserProfile}
                     userProfile={userProfile}
                   />
+                ) : (
+                  <LoginPage onLogin={handleLogin} onProfileUpdate={updateUserProfile} registeredUsers={registeredUsers} registerUser={registerUser} />
+                )
+              }
+            />
+            <Route
+              path="/cart"
+              element={
+                isLoggedIn ? (
+                  <CartPage userProfile={userProfile} onComplete={updateUserProfile} />
                 ) : (
                   <LoginPage onLogin={handleLogin} onProfileUpdate={updateUserProfile} registeredUsers={registeredUsers} registerUser={registerUser} />
                 )
