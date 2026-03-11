@@ -19,19 +19,12 @@ function Header({ isLoggedIn, currentUser, onLogout }) {
     <header className="header">
       <div className="header-content container">
         <Link to="/" className="logo" onClick={() => setIsMenuOpen(false)}>
-          <svg className="logo-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-            {/* Blue background box */}
-            <rect width="120" height="120" fill="#0052B4" rx="2" />
-            
-            {/* Stylized 3/S symbol */}
-            <g fill="none" stroke="white" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M 35 35 Q 65 20 75 40 Q 85 55 65 65 Q 50 72 40 65" />
-              <path d="M 40 65 Q 50 75 65 80 Q 85 88 75 105 Q 65 115 35 100" />
-            </g>
-            
-            {/* BAJAJ text */}
-            <text x="60" y="105" fontSize="24" fontWeight="800" fill="white" textAnchor="middle" fontFamily="Arial, sans-serif" letterSpacing="1">BAJAJ</text>
-          </svg>
+          <img
+            src={`${process.env.PUBLIC_URL}/log.png`}
+            alt=""
+            aria-hidden="true"
+            className="logo-svg"
+          />
           <img
             src={`${process.env.PUBLIC_URL}/logo2.png`}
             alt="Bajaj Insurance"
