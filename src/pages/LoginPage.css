@@ -1,6 +1,7 @@
 /* Login Page Styles */
 .login-page {
   min-height: 100vh;
+  min-height: 100svh;
   background: linear-gradient(135deg, rgba(0, 48, 135, 0.1) 0%, rgba(255, 165, 0, 0.05) 100%);
   display: flex;
   align-items: center;
@@ -250,5 +251,70 @@
 
   .side-content h2 {
     font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-page {
+    padding: 14px;
+    align-items: flex-start;
+  }
+
+  .login-container {
+    gap: 14px;
+  }
+
+  .login-card {
+    padding: 22px 18px;
+  }
+
+  .login-header h1 {
+    font-size: 20px;
+  }
+
+  .login-header p {
+    font-size: 13px;
+  }
+
+  .login-method-toggle {
+    grid-template-columns: 1fr;
+  }
+
+  .toggle-btn {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .form-group label {
+    font-size: 13px;
+  }
+
+  .form-group input {
+    font-size: 16px;
+    padding: 12px 12px;
+  }
+
+  .login-footer {
+    font-size: 12px;
+    padding-top: 16px;
+  }
+
+  .login-features {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .login-side-panel {
+    padding: 22px 18px;
+  }
+
+  .side-content h2 {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .side-content li {
+    font-size: 13px;
+    padding: 10px 0;
   }
 }
