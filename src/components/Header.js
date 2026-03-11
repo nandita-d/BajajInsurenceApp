@@ -19,12 +19,7 @@ function Header({ isLoggedIn, currentUser, onLogout }) {
     <header className="header">
       <div className="header-content container">
         <Link to="/" className="logo" onClick={() => setIsMenuOpen(false)}>
-          <img
-            src={`${process.env.PUBLIC_URL}/log.png`}
-            alt=""
-            aria-hidden="true"
-            className="logo-svg"
-          />
+          
           <img
             src={`${process.env.PUBLIC_URL}/logo2.png`}
             alt="Bajaj Insurance"

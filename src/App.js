@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -13,19 +13,37 @@ import Chatbot from './components/Chatbot';
 import './styles/global.css';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [userProfile, setUserProfile] = useState({
-    category: null,
-    occupation: null,
-    priceRange: null,
-    selectedInsurances: [],
-    fullName: '',
-    email: '',
-    phone: '',
-  });
-  // simple in-memory registry; would normally be backend
-  const [registeredUsers, setRegisteredUsers] = useState([]); // { identifier, password }
+  const STORAGE_KEY = 'bajaj_insurance_app_state_v1';
+
+  const loadSavedState = () => {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== 'object') return null;
+      return parsed;
+    } catch {
+      return null;
+    }
+  };
+
+  const saved = typeof window !== 'undefined' ? loadSavedState() : null;
+
+  const [isLoggedIn, setIsLoggedIn] = useState(Boolean(saved?.isLoggedIn));
+  const [currentUser, setCurrentUser] = useState(saved?.currentUser ?? null);
+  const [userProfile, setUserProfile] = useState(
+    saved?.userProfile ?? {
+      category: null,
+      occupation: null,
+      priceRange: null,
+      selectedInsurances: [],
+      fullName: '',
+      email: '',
+      phone: '',
+    }
+  );
+  // simple in-memory registry; would normally be backend (persisted locally for demo UX)
+  const [registeredUsers, setRegisteredUsers] = useState(saved?.registeredUsers ?? []); // { identifier, password }
 
   const handleLogin = (userEmail) => {
     setIsLoggedIn(true);
@@ -50,6 +68,20 @@ function App() {
       return next;
     });
   };
+
+  useEffect(() => {
+    try {
+      const next = {
+        isLoggedIn,
+        currentUser,
+        userProfile,
+        registeredUsers,
+      };
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    } catch {
+      // ignore storage failures (private mode / quota / blocked)
+    }
+  }, [isLoggedIn, currentUser, userProfile, registeredUsers]);
 
   return (
     <Router basename={process.env.PUBLIC_URL}>
