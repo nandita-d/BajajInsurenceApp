@@ -1,22 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaHome, FaUser, FaSignOutAlt } from 'react-icons/fa';
+import { FaBars, FaHome, FaTimes, FaUser, FaSignOutAlt } from 'react-icons/fa';
 import './Header.css';
 // logo file should be placed in public/bajaj-logo.png
 
 
 function Header({ isLoggedIn, currentUser, onLogout }) {
   const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleLogout = () => {
     onLogout();
+    setIsMenuOpen(false);
     navigate('/');
   };
 
   return (
     <header className="header">
       <div className="header-content container">
-        <Link to="/" className="logo">
+        <Link to="/" className="logo" onClick={() => setIsMenuOpen(false)}>
           <svg className="logo-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
             {/* Blue background box */}
             <rect width="120" height="120" fill="#0052B4" rx="2" />
@@ -30,13 +32,28 @@ function Header({ isLoggedIn, currentUser, onLogout }) {
             {/* BAJAJ text */}
             <text x="60" y="105" fontSize="24" fontWeight="800" fill="white" textAnchor="middle" fontFamily="Arial, sans-serif" letterSpacing="1">BAJAJ</text>
           </svg>
-          <img src="/logo2.png" alt="Bajaj Insurance" className="logo-img" />
+          <img
+            src={`${process.env.PUBLIC_URL}/logo2.png`}
+            alt="Bajaj Insurance"
+            className="logo-img"
+          />
         </Link>
 
-        <nav className="navbar">
+        <button
+          type="button"
+          className="menu-toggle"
+          onClick={() => setIsMenuOpen((prev) => !prev)}
+          aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={isMenuOpen}
+          aria-controls="primary-navigation"
+        >
+          {isMenuOpen ? <FaTimes /> : <FaBars />}
+        </button>
+
+        <nav id="primary-navigation" className={`navbar ${isMenuOpen ? 'open' : ''}`}>
           <ul className="nav-links">
             <li>
-              <Link to="/" className="nav-link">
+              <Link to="/" className="nav-link" onClick={() => setIsMenuOpen(false)}>
                 <FaHome /> Home
               </Link>
             </li>
@@ -44,13 +61,13 @@ function Header({ isLoggedIn, currentUser, onLogout }) {
             {isLoggedIn && (
               <>
                 <li>
-                  <Link to="/dashboard" className="nav-link">
+                  <Link to="/dashboard" className="nav-link" onClick={() => setIsMenuOpen(false)}>
                     <FaUser /> Dashboard
                   </Link>
                 </li>
                 <li>
                   <span className="user-info">
-                    {currentUser.substring(0, 20)}...
+                    {(currentUser || '').length > 20 ? `${currentUser.substring(0, 20)}...` : currentUser}
                   </span>
                 </li>
                 <li>
@@ -63,7 +80,7 @@ function Header({ isLoggedIn, currentUser, onLogout }) {
 
             {!isLoggedIn && (
               <li>
-                <Link to="/login" className="btn btn-primary">
+                <Link to="/login" className="btn btn-primary" onClick={() => setIsMenuOpen(false)}>
                   Login / Sign Up
                 </Link>
               </li>
