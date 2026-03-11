@@ -13,6 +13,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:safe": "cmd /c scripts\\build-safe.cmd",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

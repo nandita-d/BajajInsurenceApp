@@ -28,7 +28,8 @@ try {
   git add -A
 
   # Ensure editor config isn't tracked.
-  if (Test-Path (Join-Path $targetDir '.vscode')) {
+  $trackedVscode = (git ls-files ".vscode/*" 2>$null)
+  if ($trackedVscode) {
     git rm -r --cached .vscode 2>$null | Out-Null
   }
 
