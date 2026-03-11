@@ -1,0 +1,181 @@
+/* Header Styles */
+.header {
+  background: linear-gradient(135deg, #003087 0%, #001A4D 100%);
+  padding: 15px 0;
+  box-shadow: 0 2px 12px rgba(0, 48, 135, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  gap: 15px;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+.logo-img {
+  height: 40px;
+  width: auto;
+  margin-left: 10px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-box {
+  width: 45px;
+  height: 45px;
+  background-color: #0052B4;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  color: white;
+  font-size: 28px;
+  letter-spacing: -1px;
+  flex-shrink: 0;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  gap: 2px;
+}
+
+.logo-title {
+  font-size: 14px;
+  letter-spacing: 1.5px;
+  color: white;
+  font-weight: 700;
+}
+
+.logo-subtitle {
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: #FFA500;
+  font-weight: 600;
+}
+
+.bajaj-logo {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.logo-text {
+  font-size: 20px;
+  letter-spacing: 2px;
+  color: #FFA500;
+}
+
+.logo-subtext {
+  font-size: 12px;
+  color: white;
+}
+
+.navbar {
+  flex: 1;
+  margin-left: 40px;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 25px;
+  align-items: center;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 15px;
+  transition: color 0.3s ease;
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+.nav-link:hover {
+  color: #FFA500;
+  background-color: rgba(255, 165, 0, 0.1);
+}
+
+.user-info {
+  color: #FFA500;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.btn-logout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 2px solid white;
+  color: white;
+  background-color: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+  background-color: #FFA500;
+  border-color: #FFA500;
+  color: #003087;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header-content {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .navbar {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .logo-text {
+    font-size: 16px;
+  }
+
+  .logo-subtext {
+    font-size: 10px;
+  }
+
+  .nav-link {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+}
