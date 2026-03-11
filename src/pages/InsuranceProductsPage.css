@@ -1079,12 +1079,12 @@
   }
 
   .pricing-card.featured {
-    transform: scale(1.02);
+    transform: none;
     grid-column: 1 / -1;
   }
 
   .pricing-card.featured:hover {
-    transform: scale(1.02) translateY(-8px);
+    transform: translateY(-8px);
   }
 
   .pricing-header h1 {
@@ -1114,7 +1114,7 @@
   }
 
   .product-card.highlighted {
-    transform: scale(1.02);
+    transform: none;
   }
 }
 
@@ -1406,6 +1406,15 @@
   .category-tab,
   .category-tab:hover {
     transition: none;
+    transform: none;
+  }
+}
+
+@media (hover: none) {
+  .pricing-card:hover,
+  .pricing-card.featured:hover,
+  .product-card:hover,
+  .product-card.highlighted {
     transform: none;
   }
 }

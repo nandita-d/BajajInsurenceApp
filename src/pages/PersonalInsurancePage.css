@@ -242,6 +242,11 @@
   .personal-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .personal-card.featured,
+  .personal-card.featured:hover {
+    transform: none;
+  }
 }
 /* responsive */
 @media (max-width: 768px) {

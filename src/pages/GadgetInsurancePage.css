@@ -612,12 +612,12 @@
   }
 
   .gadget-card.featured {
-    transform: scale(1.02);
+    transform: none;
     grid-column: 1 / -1;
   }
 
   .gadget-card.featured:hover {
-    transform: scale(1.02) translateY(-12px);
+    transform: translateY(-12px);
   }
 
   .gadget-header h1 {
@@ -639,6 +639,13 @@
   .btn-proceed,
   .btn-back {
     width: 100%;
+  }
+}
+
+@media (hover: none) {
+  .gadget-card:hover,
+  .gadget-card.featured:hover {
+    transform: none;
   }
 }
 
