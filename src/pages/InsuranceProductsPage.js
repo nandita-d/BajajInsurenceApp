@@ -250,9 +250,6 @@ function InsuranceProductsPage({ onComplete, userProfile, onLogin, registerUser 
     { name: 'Personal Insurance', plans: personalPlans, icon: '👤' },
   ];
 
-  const activeCategoryData =
-    allInsuranceCategories.find((c) => c.name === activeCategory) || allInsuranceCategories[0];
-
   const categoryIcons = {
     'Health Insurance': <FaHeartbeat />,
     'Gadget Insurance': <FaMobileAlt />,

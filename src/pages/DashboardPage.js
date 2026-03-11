@@ -66,11 +66,6 @@ function DashboardPage({ userProfile, currentUser }) {
     };
   });
 
-  const totalMonthlyPremium = uniquePlanIds.reduce((sum, planId) => {
-    const meta = planCatalog[planId];
-    return sum + (meta?.price || 0);
-  }, 0);
-
   const recentPolicies = [
     {
       id: 'policy-1',
