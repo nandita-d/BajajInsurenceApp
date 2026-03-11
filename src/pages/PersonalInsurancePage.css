@@ -2,6 +2,7 @@
 .personal-page {
   background: linear-gradient(135deg, #f5f7fa 0%, #f0f3f8 100%);
   min-height: 100vh;
+  min-height: 100svh;
   padding: 60px 20px;
 }
 .personal-container {

@@ -24,6 +24,24 @@ body {
   background-color: #F5F5F5;
   color: var(--text-primary);
   line-height: 1.6;
+  overflow-x: hidden;
+}
+
+.app-wrapper {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-container {
+  flex: 1;
+}
+
+img,
+svg {
+  max-width: 100%;
+  height: auto;
 }
 
 .container {
@@ -206,6 +224,7 @@ nav a:hover {
 /* Page Container */
 .page-container {
   min-height: calc(100vh - 70px);
+  min-height: calc(100svh - 70px);
   padding: 40px 20px;
 }
 
@@ -256,6 +275,14 @@ footer {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  .page-container {
+    padding: 28px 16px;
+  }
+
   nav ul {
     gap: 15px;
   }
@@ -274,5 +301,15 @@ footer {
 
   .progress-steps {
     flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 12px;
+  }
+
+  .page-container {
+    padding: 22px 12px;
   }
 }

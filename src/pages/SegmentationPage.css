@@ -3,6 +3,7 @@
   background: linear-gradient(135deg, rgba(0, 48, 135, 0.05) 0%, rgba(255, 165, 0, 0.03) 100%);
   padding: 40px 20px;
   min-height: calc(100vh - 70px);
+  min-height: calc(100svh - 70px);
 }
 
 .segmentation-header {
