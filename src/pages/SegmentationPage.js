@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaUser, FaTrophy, FaBirthdayCake, FaBriefcase } from 'react-icons/fa';
+import { FaBriefcase, FaBirthdayCake, FaCheck, FaInfoCircle, FaTrophy, FaUser } from 'react-icons/fa';
 import './SegmentationPage.css';
 // segmentation background image should be copied to public/segmentation-bg.jpg and will show behind the header
 
@@ -12,6 +12,17 @@ function SegmentationPage({ onNext, userProfile }) {
     occupation: userProfile.occupation || '',
     // pricePreference values: 'budget' | 'mid-range' | 'premium'
     pricePreference: userProfile.priceRange || '',
+  });
+
+  const [gigCoverage, setGigCoverage] = useState(() => {
+    const existing = Array.isArray(userProfile?.gigCoverage) ? userProfile.gigCoverage : [];
+    return existing.filter(Boolean);
+  });
+
+  const [employeeSlides, setEmployeeSlides] = useState({
+    health: 0,
+    gadget: 0,
+    accident: 0,
   });
 
   const [errors, setErrors] = useState({});
@@ -30,13 +41,98 @@ function SegmentationPage({ onNext, userProfile }) {
 
   const occupationOptions = [
     { value: 'student', label: 'Student' },
+    { value: 'gig-worker', label: 'Gig Worker' },
     { value: 'employee', label: 'Employee' },
-    { value: 'self-employed', label: 'Self-Employed' },
-    { value: 'entrepreneur', label: 'Entrepreneur' },
-    { value: 'freelancer', label: 'Freelancer' },
-    { value: 'retired', label: 'Retired' },
-    { value: 'homemaker', label: 'Homemaker' },
   ];
+
+  const gigCoverageOptions = [
+    {
+      id: 'health',
+      label: 'Health Insurance',
+      startingPriceYearly: 1999,
+      description: 'Hospitalization + cashless network support',
+    },
+    {
+      id: 'motor',
+      label: 'Motor Insurance',
+      startingPriceYearly: 1499,
+      description: 'Vehicle protection + legal liability cover',
+    },
+    {
+      id: 'personal-accident',
+      label: 'Personal Accident Insurance',
+      startingPriceYearly: 999,
+      description: 'Accident + disability protection',
+    },
+  ];
+
+  const employeePackages = {
+    health: [
+      {
+        title: 'Basic Health Cover',
+        coverage: '₹2,00,000',
+        benefits: ['Cashless hospitalization', 'Doctor consultation support'],
+        premium: '₹2,999/year',
+      },
+      {
+        title: 'Standard Health Cover',
+        coverage: '₹5,00,000',
+        benefits: ['Cashless hospital network', 'Free annual health checkup', 'Medicine reimbursement'],
+        premium: '₹4,999/year',
+      },
+      {
+        title: 'Premium Health Cover',
+        coverage: '₹10,00,000',
+        benefits: ['Cashless treatment nationwide', 'Free health checkups', 'Critical illness coverage'],
+        premium: '₹7,999/year',
+      },
+    ],
+    gadget: [
+      {
+        title: 'Mobile Protection Plan',
+        coverage: 'Smartphone',
+        benefits: ['Covers smartphone damage', 'Screen damage protection', 'Water damage coverage'],
+        premium: '₹999/year',
+      },
+      {
+        title: 'Laptop & Device Protection',
+        coverage: 'Laptop + Device',
+        benefits: ['Covers laptop damage', 'Power surge protection', 'Theft protection'],
+        premium: '₹1,499/year',
+      },
+      {
+        title: 'Multi Gadget Protection',
+        coverage: 'Mobile + Laptop + Tablet',
+        benefits: ['Accidental damage coverage', 'Theft protection'],
+        premium: '₹1,999/year',
+      },
+    ],
+    accident: [
+      {
+        title: 'Basic Accident Cover',
+        coverage: '₹2,00,000',
+        benefits: ['Accidental death benefit', 'Permanent disability coverage'],
+        premium: '₹799/year',
+      },
+      {
+        title: 'Standard Accident Cover',
+        coverage: '₹5,00,000',
+        benefits: ['Accidental hospitalization cover', 'Disability protection'],
+        premium: '₹1,299/year',
+      },
+      {
+        title: 'Premium Accident Cover',
+        coverage: '₹10,00,000',
+        benefits: ['Accidental death coverage', 'Disability + hospitalization benefits', 'Family financial support'],
+        premium: '₹1,999/year',
+      },
+    ],
+  };
+
+  const gigTotalYearly = gigCoverage.reduce((sum, id) => {
+    const found = gigCoverageOptions.find((o) => o.id === id);
+    return sum + (found ? found.startingPriceYearly : 0);
+  }, 0);
 
 
   const validateForm = () => {
@@ -88,6 +184,31 @@ function SegmentationPage({ onNext, userProfile }) {
     }
   };
 
+  const toggleGigCoverage = (coverageId) => {
+    setGigCoverage((prev) => {
+      if (prev.includes(coverageId)) {
+        return prev.filter((id) => id !== coverageId);
+      }
+      return [...prev, coverageId];
+    });
+  };
+
+  const moveSlide = (group, dir) => {
+    const maxByGroup = {
+      health: employeePackages.health.length,
+      gadget: employeePackages.gadget.length,
+      accident: employeePackages.accident.length,
+    };
+    const max = maxByGroup[group] || 0;
+    if (max === 0) return;
+
+    setEmployeeSlides((prev) => {
+      const current = prev[group] ?? 0;
+      const next = (current + dir + max) % max;
+      return { ...prev, [group]: next };
+    });
+  };
+
   const handleNext = (e) => {
     e.preventDefault();
 
@@ -95,6 +216,7 @@ function SegmentationPage({ onNext, userProfile }) {
       onNext({
         ...formData,
         priceRange: formData.pricePreference,
+        gigCoverage,
       });
       // navigate according to selected category
       switch (formData.category) {
@@ -228,6 +350,226 @@ function SegmentationPage({ onNext, userProfile }) {
               ))}
             </div>
             {errors.occupation && <span className="error-text">{errors.occupation}</span>}
+
+            {/* Occupation Packages */}
+            {formData.occupation && (
+              <div className="occupation-packages" aria-live="polite">
+                {formData.occupation === 'student' && (
+                  <div className="package-card package-student">
+                    <div className="package-top">
+                      <div>
+                        <h3 className="package-title">Student Insurance Package</h3>
+                        <p className="package-subtitle">Keep it simple and protected — best for students</p>
+                      </div>
+                      <div className="package-price">
+                        <span className="price-amount">₹99</span>
+                        <span className="price-period">/month</span>
+                      </div>
+                    </div>
+
+                    <div className="package-meta">
+                      <div className="meta-pill">Coverage: ₹1 Lakh</div>
+                      <div className="meta-pill">Category: Health</div>
+                    </div>
+
+                    <ul className="package-list">
+                      <li><FaCheck /> Hospitalization coverage</li>
+                      <li><FaCheck /> Cashless treatment network</li>
+                      <li><FaCheck /> Ambulance services</li>
+                      <li><FaCheck /> Standard ward room</li>
+                    </ul>
+
+                    <div className="package-actions">
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => navigate('/products?category=health')}
+                      >
+                        View Student Plan
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-outline"
+                        onClick={() => navigate('/cart')}
+                      >
+                        Go to Cart
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {formData.occupation === 'gig-worker' && (
+                  <div className="package-card package-gig">
+                    <div className="package-top">
+                      <div>
+                        <h3 className="package-title">Gig Worker Package (Flexible)</h3>
+                        <p className="package-subtitle">
+                          Choose one or more coverages — your package updates instantly.
+                        </p>
+                      </div>
+                      <div className="package-price">
+                        <span className="price-prefix">From</span>
+                        <span className="price-amount">₹{gigTotalYearly || 999}</span>
+                        <span className="price-period">/year</span>
+                      </div>
+                    </div>
+
+                    <div className="gig-grid" role="group" aria-label="Select coverages">
+                      {gigCoverageOptions.map((opt) => {
+                        const checked = gigCoverage.includes(opt.id);
+                        return (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            className={`gig-option ${checked ? 'active' : ''}`}
+                            onClick={() => toggleGigCoverage(opt.id)}
+                            aria-pressed={checked}
+                          >
+                            <div className="gig-option-top">
+                              <span className="gig-option-title">{opt.label}</span>
+                              <span className="gig-option-price">₹{opt.startingPriceYearly}/year</span>
+                            </div>
+                            <div className="gig-option-desc">{opt.description}</div>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div className="gig-summary">
+                      <div className="gig-summary-row">
+                        <span className="gig-k">Selected:</span>
+                        <span className="gig-v">
+                          {gigCoverage.length > 0
+                            ? gigCoverageOptions
+                                .filter((o) => gigCoverage.includes(o.id))
+                                .map((o) => o.label)
+                                .join(', ')
+                            : 'None yet'}
+                        </span>
+                      </div>
+                      <div className="gig-summary-row">
+                        <span className="gig-k">Estimated total:</span>
+                        <span className="gig-v strong">₹{gigTotalYearly || 0}/year</span>
+                      </div>
+                      <p className="gig-note">
+                        <FaInfoCircle /> You can pick multiple coverages. Pricing updates automatically.
+                      </p>
+                    </div>
+
+                    <div className="package-actions">
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => navigate('/products?category=health')}
+                      >
+                        Explore Plans
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-outline"
+                        onClick={() => navigate('/cart')}
+                        disabled={gigCoverage.length === 0}
+                      >
+                        Go to Cart
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {formData.occupation === 'employee' && (
+                  <div className="package-card package-employee">
+                    <div className="package-top">
+                      <div>
+                        <h3 className="package-title">Employee Package (Traditional)</h3>
+                        <p className="package-subtitle">
+                          General insurance bundles for employees — starting from ₹2,999/year.
+                        </p>
+                      </div>
+                      <div className="package-price">
+                        <span className="price-prefix">From</span>
+                        <span className="price-amount">₹2,999</span>
+                        <span className="price-period">/year</span>
+                      </div>
+                    </div>
+
+                    <div className="employee-slides">
+                      <div className="slide-group">
+                        <div className="slide-group-header">
+                          <h4>Health Insurance</h4>
+                          <div className="slide-controls">
+                            <button type="button" className="slide-btn" onClick={() => moveSlide('health', -1)} aria-label="Previous health offer">‹</button>
+                            <button type="button" className="slide-btn" onClick={() => moveSlide('health', 1)} aria-label="Next health offer">›</button>
+                          </div>
+                        </div>
+                        <div className="slide-card" role="group" aria-label="Health insurance offers">
+                          <div className="slide-title">{employeePackages.health[employeeSlides.health].title}</div>
+                          <div className="slide-coverage">Coverage: {employeePackages.health[employeeSlides.health].coverage}</div>
+                          <ul className="slide-list">
+                            {employeePackages.health[employeeSlides.health].benefits.map((b) => (
+                              <li key={b}><FaCheck /> {b}</li>
+                            ))}
+                          </ul>
+                          <div className="slide-premium">{employeePackages.health[employeeSlides.health].premium}</div>
+                        </div>
+                      </div>
+
+                      <div className="slide-group">
+                        <div className="slide-group-header">
+                          <h4>Gadget Insurance</h4>
+                          <div className="slide-controls">
+                            <button type="button" className="slide-btn" onClick={() => moveSlide('gadget', -1)} aria-label="Previous gadget offer">‹</button>
+                            <button type="button" className="slide-btn" onClick={() => moveSlide('gadget', 1)} aria-label="Next gadget offer">›</button>
+                          </div>
+                        </div>
+                        <div className="slide-card" role="group" aria-label="Gadget insurance offers">
+                          <div className="slide-title">{employeePackages.gadget[employeeSlides.gadget].title}</div>
+                          <div className="slide-coverage">Covers: {employeePackages.gadget[employeeSlides.gadget].coverage}</div>
+                          <ul className="slide-list">
+                            {employeePackages.gadget[employeeSlides.gadget].benefits.map((b) => (
+                              <li key={b}><FaCheck /> {b}</li>
+                            ))}
+                          </ul>
+                          <div className="slide-premium">{employeePackages.gadget[employeeSlides.gadget].premium}</div>
+                        </div>
+                      </div>
+
+                      <div className="slide-group">
+                        <div className="slide-group-header">
+                          <h4>Personal Accident Insurance</h4>
+                          <div className="slide-controls">
+                            <button type="button" className="slide-btn" onClick={() => moveSlide('accident', -1)} aria-label="Previous accident offer">‹</button>
+                            <button type="button" className="slide-btn" onClick={() => moveSlide('accident', 1)} aria-label="Next accident offer">›</button>
+                          </div>
+                        </div>
+                        <div className="slide-card" role="group" aria-label="Personal accident insurance offers">
+                          <div className="slide-title">{employeePackages.accident[employeeSlides.accident].title}</div>
+                          <div className="slide-coverage">Coverage: {employeePackages.accident[employeeSlides.accident].coverage}</div>
+                          <ul className="slide-list">
+                            {employeePackages.accident[employeeSlides.accident].benefits.map((b) => (
+                              <li key={b}><FaCheck /> {b}</li>
+                            ))}
+                          </ul>
+                          <div className="slide-premium">{employeePackages.accident[employeeSlides.accident].premium}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="package-actions">
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => navigate('/products?category=health')}
+                      >
+                        Explore Packages
+                      </button>
+                      <button type="button" className="btn btn-outline" onClick={() => navigate('/cart')}>
+                        Go to Cart
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Price Sensitivity Slider */}
