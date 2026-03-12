@@ -19,6 +19,12 @@ function SegmentationPage({ onNext, userProfile }) {
     return existing.filter(Boolean);
   });
 
+  const [gigPrice, setGigPrice] = useState(() => {
+    const raw = Number(userProfile?.gigPrice);
+    if (Number.isFinite(raw) && raw >= 199) return Math.round(raw);
+    return 199;
+  });
+
   const [employeeSlides, setEmployeeSlides] = useState({
     health: 0,
     gadget: 0,
@@ -49,22 +55,39 @@ function SegmentationPage({ onNext, userProfile }) {
     {
       id: 'health',
       label: 'Health Insurance',
-      startingPriceYearly: 1999,
       description: 'Hospitalization + cashless network support',
     },
     {
       id: 'motor',
       label: 'Motor Insurance',
-      startingPriceYearly: 1499,
       description: 'Vehicle protection + legal liability cover',
     },
     {
       id: 'personal-accident',
       label: 'Personal Accident Insurance',
-      startingPriceYearly: 999,
       description: 'Accident + disability protection',
     },
   ];
+
+  const gigPricingTiers = [
+    { minPrice: 199, coverageLakhs: 1 },
+    { minPrice: 299, coverageLakhs: 2 },
+    { minPrice: 399, coverageLakhs: 3 },
+    { minPrice: 499, coverageLakhs: 4 },
+    { minPrice: 599, coverageLakhs: 5 },
+  ];
+
+  const getGigCoverageByPrice = (price) => {
+    const safePrice = Number.isFinite(price) ? price : 199;
+    const effective = Math.max(199, Math.round(safePrice));
+
+    let coverageLakhs = 1;
+    for (const tier of gigPricingTiers) {
+      if (effective >= tier.minPrice) coverageLakhs = tier.coverageLakhs;
+    }
+
+    return { effectivePrice: effective, coverageLakhs, coverageLabel: `₹${coverageLakhs}L` };
+  };
 
   const employeePackages = {
     health: [
@@ -129,10 +152,7 @@ function SegmentationPage({ onNext, userProfile }) {
     ],
   };
 
-  const gigTotalYearly = gigCoverage.reduce((sum, id) => {
-    const found = gigCoverageOptions.find((o) => o.id === id);
-    return sum + (found ? found.startingPriceYearly : 0);
-  }, 0);
+  const gigDerived = getGigCoverageByPrice(gigPrice);
 
 
   const validateForm = () => {
@@ -217,6 +237,8 @@ function SegmentationPage({ onNext, userProfile }) {
         ...formData,
         priceRange: formData.pricePreference,
         gigCoverage,
+        gigPrice: gigDerived.effectivePrice,
+        gigCoverageLakhs: gigDerived.coverageLakhs,
       });
       // navigate according to selected category
       switch (formData.category) {
@@ -409,8 +431,63 @@ function SegmentationPage({ onNext, userProfile }) {
                       </div>
                       <div className="package-price">
                         <span className="price-prefix">From</span>
-                        <span className="price-amount">₹{gigTotalYearly || 999}</span>
-                        <span className="price-period">/year</span>
+                        <span className="price-amount">₹{gigDerived.effectivePrice}</span>
+                        <span className="price-period">/month</span>
+                      </div>
+                    </div>
+
+                    <div className="gig-pricing">
+                      <div className="gig-pricing-header">
+                        <div>
+                          <div className="gig-pricing-title">Choose your monthly price</div>
+                          <div className="gig-pricing-sub">
+                            Minimum ₹199. Coverage increases automatically based on price.
+                          </div>
+                        </div>
+                        <label className="gig-price-input">
+                          <span className="gig-price-prefix">₹</span>
+                          <input
+                            type="number"
+                            inputMode="numeric"
+                            min="199"
+                            value={gigPrice}
+                            onChange={(e) => {
+                              const next = Number(e.target.value);
+                              if (!Number.isFinite(next)) return;
+                              setGigPrice(Math.max(199, Math.round(next)));
+                            }}
+                            aria-label="Monthly price"
+                          />
+                          <span className="gig-price-suffix">/mo</span>
+                        </label>
+                      </div>
+
+                      <input
+                        className="gig-price-slider"
+                        type="range"
+                        min="199"
+                        max="599"
+                        step="1"
+                        value={gigDerived.effectivePrice}
+                        onChange={(e) => setGigPrice(Number(e.target.value))}
+                        aria-label="Monthly price slider"
+                      />
+
+                      <div className="gig-coverage-banner" role="status" aria-live="polite">
+                        <span className="gig-coverage-k">Your coverage:</span>
+                        <span className="gig-coverage-v">{gigDerived.coverageLabel} (₹{gigDerived.coverageLakhs} Lakh)</span>
+                      </div>
+
+                      <div className="gig-tier-row" aria-label="Pricing tiers">
+                        {gigPricingTiers.map((tier) => (
+                          <div
+                            key={tier.minPrice}
+                            className={`gig-tier ${gigDerived.effectivePrice >= tier.minPrice ? 'active' : ''}`}
+                          >
+                            <div className="gig-tier-price">₹{tier.minPrice}</div>
+                            <div className="gig-tier-cover">₹{tier.coverageLakhs}L</div>
+                          </div>
+                        ))}
                       </div>
                     </div>
 
@@ -427,7 +504,7 @@ function SegmentationPage({ onNext, userProfile }) {
                           >
                             <div className="gig-option-top">
                               <span className="gig-option-title">{opt.label}</span>
-                              <span className="gig-option-price">₹{opt.startingPriceYearly}/year</span>
+                              <span className="gig-option-price">{gigDerived.coverageLabel}</span>
                             </div>
                             <div className="gig-option-desc">{opt.description}</div>
                           </button>
@@ -448,11 +525,11 @@ function SegmentationPage({ onNext, userProfile }) {
                         </span>
                       </div>
                       <div className="gig-summary-row">
-                        <span className="gig-k">Estimated total:</span>
-                        <span className="gig-v strong">₹{gigTotalYearly || 0}/year</span>
+                        <span className="gig-k">Selected coverages:</span>
+                        <span className="gig-v strong">{gigCoverage.length || 0}</span>
                       </div>
                       <p className="gig-note">
-                        <FaInfoCircle /> You can pick multiple coverages. Pricing updates automatically.
+                        <FaInfoCircle /> Coverage increases with your selected price. Pick multiple coverages anytime.
                       </p>
                     </div>
 

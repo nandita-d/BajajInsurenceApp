@@ -310,6 +310,130 @@
   gap: 10px;
 }
 
+.gig-pricing {
+  margin-top: 10px;
+  border: 1px solid rgba(0, 48, 135, 0.12);
+  background: rgba(0, 48, 135, 0.03);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.gig-pricing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.gig-pricing-title {
+  font-weight: 900;
+  color: #003087;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.gig-pricing-sub {
+  color: #64748b;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.gig-price-input {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(0, 48, 135, 0.18);
+  background: white;
+  border-radius: 12px;
+  padding: 8px 10px;
+  font-weight: 900;
+  color: #003087;
+  flex: 0 0 auto;
+}
+
+.gig-price-input input {
+  width: 92px;
+  border: none;
+  outline: none;
+  font-weight: 900;
+  color: #003087;
+  font-size: 14px;
+  padding: 0;
+}
+
+.gig-price-prefix,
+.gig-price-suffix {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 900;
+}
+
+.gig-price-slider {
+  width: 100%;
+  margin-top: 12px;
+  accent-color: #003087;
+}
+
+.gig-coverage-banner {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ffffff 0%, #E8F1FF 100%);
+  border: 1px solid rgba(0, 48, 135, 0.14);
+}
+
+.gig-coverage-k {
+  font-size: 12px;
+  font-weight: 900;
+  color: #003087;
+  white-space: nowrap;
+}
+
+.gig-coverage-v {
+  font-size: 12px;
+  font-weight: 900;
+  color: #003087;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.gig-tier-row {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.gig-tier {
+  border: 1px solid rgba(0, 48, 135, 0.14);
+  background: white;
+  border-radius: 12px;
+  padding: 8px 6px;
+  text-align: center;
+}
+
+.gig-tier.active {
+  background: #E8F1FF;
+  border-color: rgba(0, 48, 135, 0.32);
+}
+
+.gig-tier-price {
+  font-weight: 900;
+  color: #003087;
+  font-size: 12px;
+}
+
+.gig-tier-cover {
+  margin-top: 2px;
+  font-weight: 900;
+  color: #FFA500;
+  font-size: 12px;
+}
+
 .gig-option {
   border: 2px solid #E0E0E0;
   background: white;
@@ -610,6 +734,25 @@
 
   .gig-grid {
     grid-template-columns: 1fr;
+  }
+
+  .gig-pricing-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .gig-price-input {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .gig-price-input input {
+    width: 120px;
+    text-align: right;
+  }
+
+  .gig-tier-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .employee-slides {
