@@ -58,6 +58,11 @@ function SegmentationPage({ onNext, userProfile }) {
       description: 'Hospitalization + cashless network support',
     },
     {
+      id: 'gadget',
+      label: 'Gadget Insurance',
+      description: 'Device damage + theft protection',
+    },
+    {
       id: 'motor',
       label: 'Motor Insurance',
       description: 'Vehicle protection + legal liability cover',
@@ -537,9 +542,70 @@ function SegmentationPage({ onNext, userProfile }) {
                       <button
                         type="button"
                         className="btn btn-secondary"
-                        onClick={() => navigate('/products?category=health')}
+                        onClick={() => {
+                          if (typeof onNext === 'function') {
+                            onNext({
+                              occupation: 'gig-worker',
+                              gigCoverage,
+                              gigPrice: gigDerived.effectivePrice,
+                              gigCoverageLakhs: gigDerived.coverageLakhs,
+                            });
+                          }
+                          navigate('/products?category=health');
+                        }}
                       >
-                        Explore Plans
+                        Explore Health Plans
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-outline"
+                        onClick={() => {
+                          if (typeof onNext === 'function') {
+                            onNext({
+                              occupation: 'gig-worker',
+                              gigCoverage,
+                              gigPrice: gigDerived.effectivePrice,
+                              gigCoverageLakhs: gigDerived.coverageLakhs,
+                            });
+                          }
+                          navigate('/products?category=motor');
+                        }}
+                      >
+                        Explore Motor
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-outline"
+                        onClick={() => {
+                          if (typeof onNext === 'function') {
+                            onNext({
+                              occupation: 'gig-worker',
+                              gigCoverage,
+                              gigPrice: gigDerived.effectivePrice,
+                              gigCoverageLakhs: gigDerived.coverageLakhs,
+                            });
+                          }
+                          navigate('/gadget-insurance');
+                        }}
+                      >
+                        Explore Gadget
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-outline"
+                        onClick={() => {
+                          if (typeof onNext === 'function') {
+                            onNext({
+                              occupation: 'gig-worker',
+                              gigCoverage,
+                              gigPrice: gigDerived.effectivePrice,
+                              gigCoverageLakhs: gigDerived.coverageLakhs,
+                            });
+                          }
+                          navigate('/personal-insurance');
+                        }}
+                      >
+                        Explore Personal
                       </button>
                       <button
                         type="button"

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FaCar, FaCheck, FaHeartbeat, FaMobileAlt, FaShoppingCart, FaUserShield } from 'react-icons/fa';
+import GigFlexBar from '../components/GigFlexBar';
 import './InsuranceProductsPage.css';
 
 const CATEGORY_QUERY_MAP = {
@@ -327,6 +328,7 @@ function InsuranceProductsPage({ onComplete, userProfile }) {
   return (
     <div className="insurance-products-page">
       <div className="pricing-container">
+        <GigFlexBar userProfile={userProfile} onUpdate={onComplete} />
         <div className="pricing-header">
           <h1>Comprehensive Insurance Solutions</h1>
           <p>Explore tailored coverage options across all insurance categories</p>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaCheck, FaShoppingCart } from 'react-icons/fa';
+import GigFlexBar from '../components/GigFlexBar';
 import './PersonalInsurancePage.css';
 
 function PersonalInsurancePage({ onComplete, userProfile }) {
@@ -93,6 +94,7 @@ function PersonalInsurancePage({ onComplete, userProfile }) {
   return (
     <div className="personal-page">
       <div className="personal-container">
+        <GigFlexBar userProfile={userProfile} onUpdate={onComplete} />
         <div className="personal-header">
           <h1>Personal Insurance Plans</h1>
           <p>Choose the plan that secures you and your family</p>

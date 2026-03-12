@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaCheck, FaShoppingCart } from 'react-icons/fa';
+import GigFlexBar from '../components/GigFlexBar';
 import './GadgetInsurancePage.css';
 
 function GadgetInsurancePage({ onComplete, userProfile }) {
@@ -130,6 +131,7 @@ function GadgetInsurancePage({ onComplete, userProfile }) {
   return (
     <div className="gadget-insurance-page">
       <div className="gadget-container">
+        <GigFlexBar userProfile={userProfile} onUpdate={onComplete} />
         <div className="gadget-header">
           <h1>📱 Gadget Insurance Plans</h1>
           <p>Protect your Android & Apple devices with comprehensive coverage</p>
