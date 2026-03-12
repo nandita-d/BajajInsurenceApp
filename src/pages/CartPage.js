@@ -18,15 +18,60 @@ function CartPage({ userProfile, onComplete }) {
   });
   const [error, setError] = useState('');
 
+  const deriveGigCoverageLakhs = (price) => {
+    const value = Number(price);
+    const effective = Number.isFinite(value) ? Math.max(199, Math.round(value)) : 199;
+
+    if (effective >= 599) return 5;
+    if (effective >= 499) return 4;
+    if (effective >= 399) return 3;
+    if (effective >= 299) return 2;
+    return 1;
+  };
+
   const items = useMemo(() => {
-    return Array.isArray(userProfile?.selectedPlanDetails) ? userProfile.selectedPlanDetails : [];
-  }, [userProfile?.selectedPlanDetails]);
+    const base = Array.isArray(userProfile?.selectedPlanDetails) ? userProfile.selectedPlanDetails : [];
+
+    const isGigWorker = userProfile?.occupation === 'gig-worker';
+    const selectedGigCoverages = Array.isArray(userProfile?.gigCoverage) ? userProfile.gigCoverage.filter(Boolean) : [];
+    const gigPrice = Number(userProfile?.gigPrice);
+
+    if (!isGigWorker || selectedGigCoverages.length === 0) return base;
+
+    const effectivePrice = Number.isFinite(gigPrice) ? Math.max(199, Math.round(gigPrice)) : 199;
+    const coverageLakhs = Number(userProfile?.gigCoverageLakhs) || deriveGigCoverageLakhs(effectivePrice);
+    const coverageLabel = `₹${coverageLakhs} Lakh`;
+
+    const coverageNames = {
+      health: 'Health Insurance',
+      motor: 'Motor Insurance',
+      'personal-accident': 'Personal Accident Insurance',
+    };
+
+    const selectedText = selectedGigCoverages
+      .map((id) => coverageNames[id] || id)
+      .join(', ');
+
+    const gigItem = {
+      id: 'gig-flex',
+      name: selectedText ? `Gig Worker Flexible Package (${selectedText})` : 'Gig Worker Flexible Package',
+      price: effectivePrice,
+      coverage: coverageLabel,
+      category: 'Gig Worker',
+    };
+
+    return [gigItem, ...base];
+  }, [userProfile]);
 
   const total = useMemo(() => {
     return items.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
   }, [items]);
 
   const removeItem = (id) => {
+    if (id === 'gig-flex') {
+      onComplete({ gigCoverage: [], gigPrice: 199, gigCoverageLakhs: 1 });
+      return;
+    }
     const nextDetails = items.filter((item) => item.id !== id);
     const nextIds = nextDetails.map((item) => item.id);
     onComplete({ selectedInsurances: nextIds, selectedPlanDetails: nextDetails });
