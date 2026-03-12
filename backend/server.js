@@ -5,6 +5,16 @@ const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
+// Basic CORS (for local dev + separate frontend hosting)
+app.use((req, res, next) => {
+  const origin = process.env.CORS_ORIGIN || '*';
+  res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
+
 app.use(express.json());
 
 app.get('/health', (_req, res) => {
@@ -36,4 +46,3 @@ app.listen(port, () => {
   // eslint-disable-next-line no-console
   console.log(`Backend listening on port ${port}`);
 });
-

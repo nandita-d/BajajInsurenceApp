@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { FaPhone, FaEnvelope, FaLock } from 'react-icons/fa';
 import './LoginPage.css';
 
-function LoginPage({ onLogin, onProfileUpdate, registeredUsers = [], registerUser }) {
+function LoginPage({ onLogin, onProfileUpdate }) {
   const navigate = useNavigate();
   const [isSignup, setIsSignup] = useState(false); // toggle between login/signup
   const [loginMethod, setLoginMethod] = useState('email');
@@ -17,7 +18,6 @@ function LoginPage({ onLogin, onProfileUpdate, registeredUsers = [], registerUse
   const [isLoading, setIsLoading] = useState(false);
 
   const validateEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
-  const validatePhone = (p) => /^[0-9]{10}$/.test(p);
   const validatePassword = (pwd) => {
     // at least one lowercase, one uppercase, one number, one special, min 8 chars
     return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/.test(pwd);
@@ -28,49 +28,44 @@ function LoginPage({ onLogin, onProfileUpdate, registeredUsers = [], registerUse
     setError('');
     setSuccessMsg('');
 
-    if (loginMethod === 'email') {
-      if (!email || !password) {
-        setError('Please fill in all fields');
-        return;
-      }
-      if (!validateEmail(email)) {
-        setError('Invalid email format');
-        return;
-      }
-    } else {
-      if (!phone || !password) {
-        setError('Please fill in all fields');
-        return;
-      }
-      if (!validatePhone(phone)) {
-        setError('Invalid phone number (10 digits required)');
-        return;
-      }
+    if (loginMethod !== 'email') {
+      setError('Phone login is coming soon. Please login using email.');
+      return;
     }
 
-    // verify existing account
-    const identifier = loginMethod === 'email' ? email : phone;
-    const found = registeredUsers.find((u) => u.identifier === identifier && u.password === password);
-    if (!found) {
-      // if no user with matching credentials
-      alert("You don't have an account or credentials are incorrect. Please create an account.");
+    if (!email || !password) {
+      setError('Please fill in all fields');
+      return;
+    }
+    if (!validateEmail(email)) {
+      setError('Invalid email format');
       return;
     }
 
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      const userIdentifier = loginMethod === 'email' ? email : phone;
+    try {
+      const base = process.env.REACT_APP_API_URL || '';
+      const response = await axios.post(`${base}/login`, { email, password });
+
       if (typeof onProfileUpdate === 'function') {
         onProfileUpdate({
-          email: loginMethod === 'email' ? email : '',
-          phone: loginMethod === 'phone' ? phone : '',
+          email,
+          phone: '',
+          fullName: response?.data?.user?.name || fullName,
         });
       }
-      onLogin(userIdentifier);
+      onLogin(email);
       navigate('/segmentation');
+    } catch (err) {
+      const msg =
+        err?.response?.data?.message ||
+        (String(err?.message || '').includes('Network Error')
+          ? 'Backend not reachable. Please start the backend server on port 5000.'
+          : 'Login failed');
+      setError(msg);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const handleSignup = async (e) => {
@@ -99,25 +94,37 @@ function LoginPage({ onLogin, onProfileUpdate, registeredUsers = [], registerUse
     }
 
     setIsLoading(true);
-    // Simulate API call for account creation
-    setTimeout(() => {
-      const userIdentifier = email;
-      // register user in parent state
-      if (registerUser) {
-        registerUser(userIdentifier, password);
-      }
+    try {
+      const base = process.env.REACT_APP_API_URL || '';
+      const response = await axios.post(`${base}/register`, {
+        name: fullName.trim(),
+        email,
+        password,
+      });
+
+      setSuccessMsg(response?.data?.message || 'Welcome to Bajaj Insurance. You are successfully registered.');
+
       if (typeof onProfileUpdate === 'function') {
         onProfileUpdate({
           fullName: fullName.trim(),
-          email: userIdentifier,
+          email,
           phone: '',
         });
       }
+
       // mark user as logged in and take them to segmentation
-      onLogin(userIdentifier);
+      onLogin(email);
       navigate('/segmentation');
+    } catch (err) {
+      const msg =
+        err?.response?.data?.message ||
+        (String(err?.message || '').includes('Network Error')
+          ? 'Backend not reachable. Please start the backend server on port 5000.'
+          : 'Registration failed');
+      setError(msg);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
